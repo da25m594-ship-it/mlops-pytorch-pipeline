@@ -1,0 +1,25 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+COPY requirements/serve.txt /app/requirements/serve.txt
+
+# Install CPU-only PyTorch to keep the serving image lightweight.
+RUN pip install --no-cache-dir \
+    --index-url https://download.pytorch.org/whl/cpu \
+    torch==2.5.1 torchvision==0.20.1 \
+ && pip install --no-cache-dir \
+    fastapi==0.115.6 \
+    "uvicorn[standard]==0.34.0" \
+    Pillow==11.1.0 \
+    PyYAML==6.0.3 \
+    python-multipart==0.0.20
+
+COPY src /app/src
+
+ENV PYTHONPATH=/app
+ENV MODEL_PATH=/app/checkpoints/classifier.pt
+
+EXPOSE 8000
+
+CMD ["uvicorn", "src.serve:app", "--host", "0.0.0.0", "--port", "8000"]
