@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: mlops-pytorch-serve
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: mlops-pytorch-serve
+
+  template:
+    metadata:
+      labels:
+        app: mlops-pytorch-serve
+
+    spec:
+      containers:
+        - name: mlops-pytorch-serve
+          image: mlops-pytorch-serve:dev
+          imagePullPolicy: Never
+
+          ports:
+            - containerPort: 8000
+
+          env:
+            - name: MODEL_PATH
+              value: /app/checkpoints/classifier.pt
+
+          volumeMounts:
+            - name: model-checkpoint
+              mountPath: /app/checkpoints
+              readOnly: true
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "768Mi"
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+
+      volumes:
+        - name: model-checkpoint
+          hostPath:
+            path: /tmp
+            type: Directory
