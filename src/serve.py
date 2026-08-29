@@ -40,6 +40,7 @@ def load_model():
     checkpoint = torch.load(
         MODEL_PATH,
         map_location="cpu",
+        weights_only=True,
     )
 
     model.load_state_dict(checkpoint["model_state_dict"])

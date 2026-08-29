@@ -4,10 +4,11 @@ WORKDIR /app
 
 COPY requirements/serve.txt /app/requirements/serve.txt
 
-# Install CPU-only PyTorch to keep the serving image lightweight.
+# Install CPU-only PyTorch.
 RUN pip install --no-cache-dir \
-    --index-url https://download.pytorch.org/whl/cpu \
-    torch==2.5.1 torchvision==0.20.1 \
+    --extra-index-url https://download.pytorch.org/whl/cpu \
+    torch==2.5.1+cpu \
+    torchvision==0.20.1+cpu \
  && pip install --no-cache-dir \
     fastapi==0.115.6 \
     "uvicorn[standard]==0.34.0" \
