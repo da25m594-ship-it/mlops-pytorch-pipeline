@@ -113,13 +113,12 @@ mlops-pytorch-pipeline/
 ├── README.md
 └── .gitignore
 
-
+```
 ---
 
 ## 5. Model
 
 ```markdown
-## 5. Model
 
 The project uses a small convolutional neural network (`SmallCNN`) for CIFAR-10 image classification.
 
@@ -133,6 +132,7 @@ Output:
 - 10 class scores corresponding to the CIFAR-10 classes.
 
 The serving API applies CIFAR-10 normalization before inference.
+```
 
 ## 6. Training
 
@@ -198,7 +198,6 @@ mlflow.pytorch.load_model(
 ## 9. Model Deployment Utility
 
 ```markdown
-## 9. Model Deployment Utility
 
 The project provides:
 
@@ -219,14 +218,12 @@ python src/deploy_model.py \
     --version 1 \
     --output checkpoints/classifier.pt
 
-
+```
 ---
 
-## 10. Docker
 
+## 10. Docker
 ```markdown
-## 10. Docker
-
 Two Docker images are used.
 
 ### Training Image
@@ -239,14 +236,13 @@ Build:
 docker build \
     -f docker/Dockerfile.train \
     -t mlops-pytorch-train:dev .
-
+```
 
 ---
 
 ## 11. FastAPI Model Serving
 
 ```markdown
-## 11. FastAPI Model Serving
 
 The trained model is served using FastAPI.
 
@@ -259,13 +255,12 @@ docker run -d \
     -v "$PWD/checkpoints:/app/checkpoints:ro" \
     mlops-pytorch-serve:dev
 
-
+```
 ---
 
 ## 12. Health Check
 
 ```markdown
-## 12. Health Check
 
 The API provides a health endpoint:
 
@@ -276,13 +271,12 @@ Example:
 ```bash
 curl http://localhost:8000/health
 
-
+```
 ---
 
 ## 13. Prediction API
 
 ```markdown
-## 13. Prediction API
 
 The prediction endpoint is:
 
@@ -300,13 +294,12 @@ curl -X POST \
   "class_probabilities": [...]
 }
 
-
+```
 ---
 
 ## 14. Kubernetes Deployment
 
 ```markdown
-## 14. Kubernetes Deployment
 
 The serving application can be deployed using Kubernetes and Minikube.
 
@@ -315,14 +308,13 @@ Start Minikube:
 ```bash
 minikube start --driver=docker
 
-
+```
 
 ---
 
 ## 15. Kubernetes Health and Readiness
 
 ```markdown
-## 15. Kubernetes Health and Readiness
 
 The Kubernetes Deployment uses the FastAPI `/health` endpoint for:
 
@@ -343,6 +335,9 @@ with:
 
 `STATUS Running`
 
+```
+---
+
 ## 16. Testing
 
 The project uses pytest for automated testing.
@@ -358,7 +353,6 @@ PYTHONPATH=. pytest -q
 ## 17. Continuous Integration
 
 ```markdown
-## 17. Continuous Integration
 
 GitHub Actions is configured in:
 
@@ -376,6 +370,7 @@ The CI pipeline:
 The final GitHub Actions CI checks completed successfully with:
 
 `7 passed`
+```
 
 ## 18. Git Branching and Pull Requests
 
@@ -442,7 +437,6 @@ Prediction API
 ## 20. Validation Summary
 
 ```markdown
-## 20. Validation Summary
 
 The implementation was validated at multiple levels.
 
@@ -452,13 +446,12 @@ The implementation was validated at multiple levels.
 python -m py_compile
 git diff --check
 
-
+```
 ---
 
 ## 21. Conclusion
 
 ```markdown
-## 21. Conclusion
 
 This project demonstrates an end-to-end MLOps workflow for a PyTorch CIFAR-10 image classification model.
 
@@ -474,6 +467,7 @@ The implementation integrates:
 - Automated testing
 - GitHub Actions CI
 - Git feature branches and pull requests
+```
 
 The project demonstrates the complete lifecycle from model development and experiment tracking through model registration, deployment, API serving, and Kubernetes orchestration.
 
