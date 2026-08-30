@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import mlflow
 import torch
 import torch.nn as nn
 import yaml
@@ -79,6 +80,21 @@ def main():
         config_path = Path("configs/training_config.yaml")
 
     config = load_config(str(config_path))
+    mlflow.set_tracking_uri("file:./mlruns")
+    mlflow.set_experiment("pytorch-cifar10")
+
+    mlflow.start_run()
+    mlflow.log_params({
+        "architecture": config["model"]["architecture"],
+        "num_classes": config["model"]["num_classes"],
+        "epochs": config["training"]["epochs"],
+        "batch_size": config["training"]["batch_size"],
+        "learning_rate": config["training"]["learning_rate"],
+        "early_stopping_patience": config["training"]["early_stopping_patience"],
+        "dataset": config["data"]["dataset"],
+        "train_samples": config["data"]["train_samples"],
+        "val_samples": config["data"]["val_samples"],
+    })
 
     device = torch.device(
         "cuda" if torch.cuda.is_available() else "cpu"
@@ -145,6 +161,15 @@ def main():
         }
 
         print(json.dumps(log_entry), flush=True)
+        mlflow.log_metrics(
+            {
+                "train_loss": train_loss,
+                "train_accuracy": train_acc,
+                "val_loss": val_loss,
+                "val_accuracy": val_acc,
+            },
+            step=epoch + 1,
+        )
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
@@ -160,7 +185,10 @@ def main():
                 },
                 checkpoint_path,
             )
-
+            mlflow.log_artifact(
+                str(checkpoint_path),
+                artifact_path="model",
+            )
             print(json.dumps({
                 "event": "checkpoint_saved",
                 "path": str(checkpoint_path),
@@ -175,6 +203,9 @@ def main():
                     "epoch": epoch + 1,
                 }), flush=True)
                 break
+    mlflow.log_metric("best_val_loss", best_val_loss)
+
+    mlflow.end_run()
 
     print(json.dumps({
         "event": "training_complete",
