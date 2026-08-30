@@ -2,9 +2,11 @@ import json
 from pathlib import Path
 
 import mlflow
+import mlflow.pytorch
 import torch
 import torch.nn as nn
 import yaml
+from mlflow.models import infer_signature
 
 from dataset import get_dataloaders
 from model import get_model
@@ -187,7 +189,7 @@ def main():
             )
             mlflow.log_artifact(
                 str(checkpoint_path),
-                artifact_path="model",
+                artifact_path="checkpoint",
             )
             print(json.dumps({
                 "event": "checkpoint_saved",
@@ -203,6 +205,32 @@ def main():
                     "epoch": epoch + 1,
                 }), flush=True)
                 break
+    best_checkpoint = torch.load(
+        checkpoint_path,
+        map_location=device,
+        weights_only=True,
+    )
+
+    model.load_state_dict(best_checkpoint["model_state_dict"])
+    model.eval()
+    input_example = torch.randn(1, 3, 32, 32)
+
+    with torch.no_grad():
+        output_example = model(input_example)
+
+    signature = infer_signature(
+        input_example.numpy(),
+        output_example.numpy(),
+    )
+
+    mlflow.pytorch.log_model(
+        model,
+        artifact_path="model",
+        registered_model_name="CIFAR10_SmallCNN",
+        signature=signature,
+        input_example=input_example.numpy(),
+    )
+
     mlflow.log_metric("best_val_loss", best_val_loss)
 
     mlflow.end_run()
