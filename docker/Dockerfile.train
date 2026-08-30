@@ -9,6 +9,6 @@ RUN pip install --no-cache-dir -r /app/requirements/train.txt
 COPY src /app/src
 COPY configs /app/configs
 
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/app:/app/src
 
 CMD ["python", "/app/src/train.py"]
