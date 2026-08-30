@@ -31,36 +31,27 @@ The pipeline covers:
 
 ```mermaid
 flowchart LR
-
     A[CIFAR-10 Dataset] --> B[PyTorch Training]
 
     B --> C[MLflow Experiment Tracking]
-
-    B --> D[Checkpoint<br/>classifier.pt]
+    B --> D[Checkpoint classifier.pt]
 
     C --> E[MLflow Model Registry]
-
-    E --> F[Registered Model<br/>CIFAR10_SmallCNN v1]
+    E --> F[Registered Model CIFAR10_SmallCNN v1]
 
     F --> G[deploy_model.py]
-
     G --> D
 
-    D --> H[Docker Image<br/>mlops-pytorch-serve]
+    D --> H[Docker Serving Image]
+    H --> I[FastAPI]
 
-    H --> I[FastAPI Serving]
+    I --> J[Health API]
+    I --> K[Prediction API]
 
-    I --> J[/health]
-    I --> K[/predict]
-
-    H --> L[Kubernetes / Minikube]
-
-    L --> M[Deployment]
-    L --> N[NodePort Service]
-
-    O[GitHub Repository] --> P[Pull Requests]
-    P --> Q[GitHub Actions CI]
-    Q --> R[pytest]
+    H --> L[Kubernetes Deployment]
+    L --> M[Minikube]
+    M --> N[NodePort Service]
+```
 
 ## 3. Technology Stack
 
